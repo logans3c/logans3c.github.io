@@ -23,7 +23,7 @@ PRETTY FORWARD CODE RIGHT?
 just send a normal request with the header `X-Forwarded-For: certrestrictnetwork.localhost` and you will get the flag.
 
 ![restrictflag.webp](/assets/img/blog/icmtc/restrict_flag.webp)
-the flag is encoded with a strange type of encoding that I don't know what it is but a identifier will know it, i used https://www.dcode.fr/cipher-identifier to identify the encoding and it was `base 91` so I decoded it and got the flag.
+the flag is encoded with a strange type of encoding that I don't know what it is but a identifier will know it, i used [https://www.dcode.fr/cipher-identifier] to identify the encoding and it was `base 91` so I decoded it and got the flag.
 
 ## Internship application
 
