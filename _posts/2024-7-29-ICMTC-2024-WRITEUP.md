@@ -174,6 +174,7 @@ you can use webhook site like `webhook.site` to receive the request and log the 
 
 ![webhook](/assets/img/blog/icmtc/internship_creds.png)
 The credentials are sent to us in the `Authorization` header and was base64 encoded but the webhook site decoded it for us.
+> you will need to add the CORS header to your webhook url, you can do that from edit url button in webhook.site.
 
 now we need to set that header in our request to the `admin` endpoint and we will get the flag.
 
