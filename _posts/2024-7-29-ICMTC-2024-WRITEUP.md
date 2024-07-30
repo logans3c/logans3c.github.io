@@ -3,9 +3,9 @@ title:  "ICMTC 2024 FINALS WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
-tags: ctf,sql_injection,nosql_injection,web
+tags: [ctf,sql_injection,nosql_injection,web]
 date:   2024-07-28 13:49:56 +0300
-categories: CTFs
+categories: [CTFs]
 ---
 Hi I am Mohammed Ashraf AKA logan0x
 and this is my Writeup for ICMTC FINALS 2024
