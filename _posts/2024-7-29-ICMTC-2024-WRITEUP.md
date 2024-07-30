@@ -387,6 +387,6 @@ The script idea in detail :
 # Conclusion
 This is my writeup for ICMTC 2024 Finals Web Challenges.
 I hope you enjoyed it and learned something new.
-
+WE GOT 4TH, that was disappointing but we will come back stronger next time.
 
 
