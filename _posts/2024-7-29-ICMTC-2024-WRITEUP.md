@@ -303,7 +303,7 @@ print('Successfully brute forced token:', token_prefix + urllib.parse.unquote(re
 ```
 > The script will brute force the secret field and get the flag.
 
-## File Pattern Challenge
+# File Pattern Challenge
 
 This challenge is about finding the flag in a file that is being served by the server.\
 The Flag path is in html comment in the front end source code.
