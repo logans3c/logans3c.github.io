@@ -203,6 +203,7 @@ and i successfully broke the reset password functionality.
 
 > THIS NOT MEANS THAT THE VULN HERE IS NOSQL INJECTION , IT JUST A ACCIDENT, BUT THE VULN IS `PRISMA INJECTION` I TAUGHT FIRST IT'S NOSQL INJECTION BUT THE EXPERIENCED GEEK @abd0ghazy CORRECTED ME AND TOLD ME IT'S `PRISMA INJECTION` AND ALSO RECOMMENDED THIS SOURCE https://www.elttam.com/blog/plorming-your-primsa-orm/ TO LEARN MORE ABOUT PRISMA INJECTION.
 
+> prisma is just a ORM that is used to interact with the database and it's not a database itself. ORMs are used to interact with the database and they are used to add a layer of abstraction between the application and the database so programmers have no need to write SQL queries anymore. prisma and other ORMs can be used of the top of SQL databases and NoSQL databases.
 
 
 after some searching about prisma syntax here is the syntax for the query on the server side.
