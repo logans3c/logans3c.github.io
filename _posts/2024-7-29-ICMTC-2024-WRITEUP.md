@@ -3,7 +3,7 @@ title:  "ICMTC 2024 FINALS WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
-tags: [ctf,sql_injection,nosql_injection,web]
+tags: [ctf,sql_injection,prisma,orm_injection,web]
 date:   2024-07-28 13:49:56 +0300
 categories: [CTFs]
 ---
@@ -180,7 +180,7 @@ now we need to set that header in our request to the `admin` endpoint and we wil
 
 ## Reveal Me
 
-In this challenge we need to do `NoSQL injection` to bypass the login and get the flag. it's error based injection.
+In this challenge we need to do `ORM injection` to bypass the login and get the flag. it's error based injection.
 
 This is a black box challenge and the source code is not given to us.
 
@@ -199,6 +199,10 @@ Then I Found that the Framework is `express` and `nodejs` so i started testing f
 
 and i successfully broke the reset password functionality.
 ![NoSql](/assets/img/blog/icmtc/NoSql.png)
+
+> THIS NOT MEANS THAT THE VULN HERE IS NOSQL INJECTION , IT JUST A ACCIDENT, BUT THE VULN IS `PRISMA INJECTION` I TAUGHT FIRST IT'S NOSQL INJECTION BUT THE EXPERIENCED GEEK @abd0ghazy CORRECTED ME AND TOLD ME IT'S `PRISMA INJECTION` AND ALSO RECOMMENDED THIS SOURCE https://www.elttam.com/blog/plorming-your-primsa-orm/ TO LEARN MORE ABOUT PRISMA INJECTION.
+
+
 
 after some searching about prisma syntax here is the syntax for the query on the server side.
 ```js
