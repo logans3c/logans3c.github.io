@@ -10,7 +10,6 @@ categories: [CTFs]
 Hi I am Mohammed Ashraf AKA logan0x
 and this is my Writeup for ICMTC FINALS 2024
 
-![ASCWG.jpg](/assets/img/blog/icmtc.jpg)
 
 ## Restricted Network 
 In this challenge we need to bypass the php filter to trick the server and make it think we are in the same network as him.
@@ -161,6 +160,7 @@ The server is a simple express server that serves a static file and has 8 routes
 The server uses basic authentication to protect the admin routes. The back end using library called `basic-auth` to get the username and password from the request and check if they are equal to the admin username and password. If they are equal, the server will call the next middleware, otherwise, it will return a 401 status code with the message `Authentication required.`.
 
 > In the backend there is a bot that will approve the application automatically. they informed us in the competition.
+
 ### Vulnerability
 1- You can see that `/redirect` route is vulnerable to open redirect attack because it takes the url from the query string and redirects to it without any validation. This can be exploited to redirect the admin to an attacker-controlled website and steal the admin's credentials.
 

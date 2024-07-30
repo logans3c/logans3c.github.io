@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Detailed Writeup about php gadget chains"
+title:  "Detailed Writeup about deserialization"
 description: Developing a custom gadget chain for PHP deserialization ,Portswigger lab
 image: 
   path: /assets/img/blog/dese.jpg
