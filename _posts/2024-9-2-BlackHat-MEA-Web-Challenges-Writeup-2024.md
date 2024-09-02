@@ -685,23 +685,23 @@ so that restricted my idea to get the flag by the `note_id` and `note_secret` us
 `/viewNote?note_id=66&note_secret[note_id]=0`
 
 
-the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = `` `note_id`` ` = '0'`
+the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = `` `note_id` `` = '0'`
 
 Here's a breakdown of what happens:
 
   note_id = 66: This condition is straightforward and will select rows where note_id is equal to 66.
 
-  secret = `` `note_id`` ` = '0': This part is more complex and involves a bit of SQL logic.
+  secret = `` `note_id` `` = '0': This part is more complex and involves a bit of SQL logic.
 
-  SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id`` ` = '0'` is interpreted as (secret = `` `note_id` `` ) = '0'.
+  SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'is interpreted as (secret = `` `note_id` ``) = '0'.
 
-  The expression `secret = `` `note_id`` ` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id`` `.
+  The expression `secret = `` `note_id` `` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id` ``.
 
-  The result of secret = `` `note_id`` ` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
+  The result of secret = `` `note_id` `` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
 
-  Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression (secret = `` `note_id`` `) = '0' will check if the result of secret = `` `note_id`` ` is equal to the integer 0.
+  Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression (secret = `` `note_id` ``) = '0' will check if the result of secret = `` `note_id` `` is equal to the integer 0.
 
-  so, the condition (secret = `` `note_id`` `) = '0' is now `0=0`
+  so, the condition (secret = `` `note_id` ``) = '0' is now `0=0`
 
   Therefore, the query will select rows where note_id is 66 and `0=0`. This will return the flag.
 
