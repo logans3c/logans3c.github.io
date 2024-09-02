@@ -705,7 +705,11 @@ so that restricted my idea to get the flag by the `note_id` and `note_secret` us
 `/viewNote?note_id=66&note_secret[note_id]=0`
 
 
-the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = \`` `note_id` `` = '0'`
+The `note_secret` is an object that contains the key `note_id` with the value 0, so the query will be like this:
+
+```sql
+SELECT note_id, username, note FROM notes WHERE note_id = 66 AND secret = ```note_id``` = '0'
+```
 
 Here's a breakdown of what happens:
 
