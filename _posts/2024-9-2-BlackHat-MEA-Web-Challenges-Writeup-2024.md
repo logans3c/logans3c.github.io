@@ -1,8 +1,8 @@
 ---
-title:  "BLACK HAT MEA CTF 2024 WEB CHALLENGES WRITEUP"
-description: WEB WRITEUP FOR ICMTC CTF
+title:  "BLACK HAT MEA CTF QUALS 2024 WEB CHALLENGES WRITEUP"
+description: WEB WRITEUP FOR BLACK HAT QUALS 2024
 image: 
-  path: /assets/img/blog/icmtc.jpg
+  path: /assets/img/blog/blackhat/wolv_black_hat.jpg
 tags: [ctf,sql_injection,web,Object_Injection]
 date:   2024-07-28 13:49:56 +0300
 categories: [CTFs]
