@@ -721,7 +721,7 @@ Here's a breakdown of what happens:
 
   The expression `secret` = `` `note_id` `` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id` ``.
 
-  The result of secret = `` `note_id` `` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
+  The result of ``secret` = `` `note_id` `` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
 
   Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression (secret = `` `note_id` ``) = '0' will check if the result of secret = `` `note_id` `` is equal to the integer 0.
 
