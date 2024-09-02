@@ -710,7 +710,7 @@ Here in this image is a similar example to understand the output:
 then it became:
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
 
-Also here is the request from mysql logs to be sure of how our request interpreted by the database:
+Also here is the request from mysql logs to be sure of how our request interpreted by the database
 ![alt text](<../assets/img/blog/blackhat/notey/local.png>)
 
 ### Getting the flag
