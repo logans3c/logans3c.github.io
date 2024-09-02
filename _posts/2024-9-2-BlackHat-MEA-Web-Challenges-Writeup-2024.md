@@ -3,7 +3,7 @@ title:  "BLACK HAT MEA CTF 2024 WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
-tags: [ctf,sql_injection,prisma,orm_injection,web]
+tags: [ctf,sql_injection,web,Object_Injection]
 date:   2024-07-28 13:49:56 +0300
 categories: [CTFs]
 ---
@@ -684,26 +684,51 @@ so that restricted my idea to get the flag by the `note_id` and `note_secret` us
 
 `/viewNote?note_id=66&note_secret[note_id]=0`
 
-the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = 'note_id' = 0`
+
+the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = 'note_id' = '0'`
 
 Here's a breakdown of what happens:
 
     note_id = 66: This condition is straightforward and will select rows where note_id is equal to 66.
 
-    secret = 'note_id' = 0: This part is more complex and involves a bit of SQL logic.
+    secret = 'note_id' = '0': This part is more complex and involves a bit of SQL logic.
 
-        SQL evaluates expressions from left to right. So, the expression `secret = 'note_id' = 0` is interpreted as (secret = 'note_id') = 0.
+        SQL evaluates expressions from left to right. So, the expression `secret = 'note_id' = '0'` is interpreted as (secret = 'note_id') = '0'.
 
         The expression `secret = 'note_id'` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to 'note_id'.
 
-        The result of secret = 'note_id' (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to 0.
+        The result of secret = 'note_id' (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
 
-        so, the condition (secret = 'note_id') = 0 is true when secret is not equal to 'note_id', which is the case here.
+        Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression (secret = 'note_id') = '0' will check if the result of secret = 'note_id' is equal to the integer 0.
 
-        Therefore, the query will select rows where note_id is 66 and secret is not equal to 'note_id'. This will return the flag.
+        so, the condition (secret = 'note_id') = '0' is now `0=0`
+
+        Therefore, the query will select rows where note_id is 66 and `true`. This will return the flag.
 
         Here in this image is a similar example to understand the output:
 ![alt text](<../assets/img/blog/blackhat/notey/online.png>)
+then it became:
+![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
+
+Also here is the request from mysql logs to be sure of how our request interpreted by the database:
+![alt text](<../assets/img/blog/blackhat/notey/local.png)
+
+### Getting the flag
+we need to be fast when getting the flag as the server was restarting every few seconds, so we need to write a script to get the flag as soon as the server starts.
+
+```python
+from requests import Session
+
+s = Session()
+login_url = "http://a233af04b075fbec51200.playat.flagyard.com/login"
+note_url = "http://a233af04b075fbec51200.playat.flagyard.com/viewNote"
+creds = {"username": "logan0x", "password": "logan0x"}
+note_params = {"note_id": 66, "note_secret[note_id]": 0}
+print(s.get(note_url, params=note_params).text)
+```
+
 
 ### Long explanation of the exploit:
+
+for Long explanation of the issue reason you can check this [https://gccybermonks.com/posts/obji2sqli/](https://gccybermonks.com/posts/obji2sqli/)
 
