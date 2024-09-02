@@ -693,7 +693,7 @@ Here's a breakdown of what happens:
 
   secret = \`note_id\` = '0': This part is more complex and involves a bit of SQL logic.
 
-  SQL evaluates expressions from left to right. So, the expression `secret = \`note_id\` = '0'` is interpreted as (secret = \`note_id\` ) = '0'.
+  SQL evaluates expressions from left to right. So, the expression `secret = \`note_id\` = '0'` is interpreted as (secret = `` `note_id` `` ) = '0'.
 
   The expression `secret = \`note_id\` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to \`note_id\`.
 
