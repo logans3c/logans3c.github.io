@@ -711,7 +711,7 @@ then it became:
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
 
 Also here is the request from mysql logs to be sure of how our request interpreted by the database:
-![alt text](<../assets/img/blog/blackhat/notey/local.png)
+![alt text](<../assets/img/blog/blackhat/notey/local.png>)
 
 ### Getting the flag
 we need to be fast when getting the flag as the server was restarting every few seconds, so we need to write a script to get the flag as soon as the server starts.
