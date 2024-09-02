@@ -1,5 +1,5 @@
 ---
-title:  "I"
+title:  "BLACK HAT MEA CTF 2024 WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
