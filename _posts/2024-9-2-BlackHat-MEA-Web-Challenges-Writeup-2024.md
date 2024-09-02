@@ -303,6 +303,407 @@ WE GET THE ADMIN PASSWORD, LETS LOGIN AS ADMIN AND GET THE FLAG
 
 
 
+## 2. Notey
+
+### Description
+```
+I created a note sharing website for everyone to talk to themselves secretly. Don't try to access others notes, grass isn't greener :'( )
+```
+
+### Source Code
+index.js:
+```js
+const express = require('express');
+const bodyParser = require('body-parser');
+const crypto=require('crypto');
+var session = require('express-session');
+const db = require('./database');
+const middleware = require('./middlewares');
+
+const app = express();
 
 
+app.use(bodyParser.urlencoded({
+extended: true
+}))
+
+app.use(session({
+    secret: crypto.randomBytes(32).toString("hex"),
+    resave: true,
+    saveUninitialized: true
+}));
+
+
+
+app.get('/',(req,res)=>{
+    res.send("Welcome")
+})
+
+app.get('/profile', middleware.auth, (req, res) => {
+    const username = req.session.username;
+
+    db.getNotesByUsername(username, (err, notes) => {
+    if (err) {
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }   
+    res.json(notes);
+    });
+});
+
+app.get('/viewNote', middleware.auth, (req, res) => {
+    const { note_id,note_secret } = req.query;
+
+    if (note_id && note_secret){
+        db.getNoteById(note_id, note_secret, (err, notes) => {
+            if (err) {
+            return res.status(500).json({ error: 'Internal Server Error' });
+            }
+            return res.json(notes);
+        });
+    }
+    else
+    {
+        return res.status(400).json({"Error":"Missing required data"});
+    }
+});
+
+
+app.post('/addNote', middleware.auth, middleware.addNote, (req, res) => {
+    const { content, note_secret } = req.body;
+        db.addNote(req.session.username, content, note_secret, (err, results) => {
+            if (err) {
+            return res.status(500).json({ error: 'Internal Server Error' });
+            }
+    
+            if (results) {
+            return res.json({ message: 'Note added successful' });
+            } else {
+            return res.status(409).json({ error: 'Something went wrong' });
+            }
+        });
+});
+
+
+app.post('/login', middleware.login, (req, res) => {
+const { username, password } = req.body;
+
+    db.login_user(username, password, (err, results) => {
+        if (err) {
+        console.log("req ",req.session);
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        if (results.length > 0) {
+        console.log("sec",req.session);
+        req.session.username = username;
+        return res.json({ message: 'Login successful' });
+        } else {
+        console.log(req.session);
+        return res.status(401).json({ error: 'Invalid username or password' });
+        }
+    });
+}); 
+
+app.post('/register', middleware.login, (req, res) => {
+const { username, password } = req.body;
+
+    db.register_user(username, password, (err, results) => {
+        if (err) {
+        return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        if (results) {
+        return res.json({ message: 'Registration successful' });
+        } else {
+        console.log(req.session);
+        return res.status(409).json({ error: 'Username already exists' });
+        }
+    });
+});
+
+db.wait().then(() => {
+    db.insertAdminUserOnce((err, results) => {
+        if (err) {
+            console.error('Error:', err);
+        } else {
+            db.insertAdminNoteOnce((err, results) => {
+                if (err) {
+                    console.error('Error:', err);
+                } else {
+                    app.listen(3000, () => {
+                        console.log('Server started on http://localhost:3000');
+                    });
+                }
+            });
+        }
+    });
+});
+```
+
+middlewares.js:
+```js
+const auth = (req, res, next) => {
+    ssn = req.session
+    console.log(ssn)
+    if (ssn.username) {
+        return next();
+    } else {
+        return res.status(401).send('Authentication required.');
+    }
+};
+
+
+const login = (req,res,next) =>{
+    const {username,password} = req.body;
+    if ( !username || ! password )
+    {
+        return res.status(400).send("Please fill all fields");
+    }
+    else if(typeof username !== "string" || typeof password !== "string")
+    {
+        return res.status(400).send("Wrong data format");
+    }
+    next();
+}
+
+const addNote = (req,res,next) =>{
+    const { content, note_secret } = req.body;
+    if ( !content || ! note_secret )
+    {
+        return res.status(400).send("Please fill all fields");
+    }
+    else if(typeof content !== "string" || typeof note_secret !== "string")
+    {
+        return res.status(400).send("Wrong data format");
+    }
+    else if( !(content.length > 0 && content.length < 255) ||  !( note_secret.length >=8 && note_secret.length < 255) )
+    {
+        return res.status(400).send("Wrong data length");
+    }
+    next();
+}
+
+module.exports ={
+    auth, login, addNote
+};
+```
+database.js:
+```js
+const mysql = require('mysql');
+const crypto=require('crypto');
+
+
+const pool = mysql.createPool({
+  host: '127.0.0.1',
+  user: 'root',
+  password: '',
+  database: 'CTF',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// One liner to wait a second
+async function wait() {
+  await new Promise(r => setTimeout(r, 1000));
+}
+
+function insertAdminUserOnce(callback) {
+  const checkUserQuery = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+  const insertUserQuery = 'INSERT INTO users (username, password) VALUES (?, ?)';
+  const username = 'admin';
+  const password = crypto.randomBytes(32).toString("hex");
+
+  pool.query(checkUserQuery, [username], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+
+    const userCount = results[0].count;
+
+    if (userCount === 0) {
+      pool.query(insertUserQuery, [username, password], (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          callback(err, null);
+          return;
+        }
+        console.log(`Admin user inserted successfully with this passwored ${password}.`);
+        callback(null, results);
+      });
+    } else {
+      console.log('Admin user already exists. No insertion needed.');
+      callback(null, null);
+    }
+  });
+}
+
+function insertAdminNoteOnce(callback) {
+  const checkNoteQuery = 'SELECT COUNT(*) AS count FROM notes WHERE username = "admin"';
+  const insertNoteQuery = 'INSERT INTO notes(username,note,secret)values(?,?,?)';
+  const flag = process.env.DYN_FLAG || "placeholder";
+  const secret = crypto.randomBytes(32).toString("hex");
+
+  pool.query(checkNoteQuery, [], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+
+    const NoteCount = results[0].count;
+
+    if (NoteCount === 0) {
+      pool.query(insertNoteQuery, ["admin", flag, secret], (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          callback(err, null);
+          return;
+        }
+        console.log(`Admin Note inserted successfully with this secret ${secret}`);
+        callback(null, results);
+      });
+    } else {
+      console.log('Admin Note already exists. No insertion needed.');
+      callback(null, null);
+    }
+  });
+}
+
+
+function login_user(username,password,callback){
+
+  const query = 'Select * from users where username = ? and password = ?';
+  
+  pool.query(query, [username,password], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+    callback(null, results);
+  });
+}
+
+function register_user(username, password, callback) {
+  const checkUserQuery = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+  const insertUserQuery = 'INSERT INTO users (username, password) VALUES (?, ?)';
+
+  pool.query(checkUserQuery, [username], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+
+    const userCount = results[0].count;
+
+    if (userCount === 0) {
+      pool.query(insertUserQuery, [username, password], (err, results) => {
+        if (err) {
+          console.error('Error executing query:', err);
+          callback(err, null);
+          return;
+        }
+        console.log('User registered successfully.');
+        callback(null, results);
+      });
+    } else {
+      console.log('Username already exists.');
+      callback(null, null);
+    }
+  });
+}
+
+
+function getNotesByUsername(username, callback) {
+  const query = 'SELECT note_id,username,note FROM notes WHERE username = ?';
+  pool.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+    callback(null, results);
+  });
+}
+
+function getNoteById(noteId, secret, callback) {
+  const query = 'SELECT note_id,username,note FROM notes WHERE note_id = ? and secret = ?';
+  console.log(noteId,secret);
+  pool.query(query, [noteId,secret], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+    callback(null, results);
+  });
+}
+
+function addNote(username, content, secret, callback) {
+  const query = 'Insert into notes(username,secret,note)values(?,?,?)';
+  pool.query(query, [username, secret, content], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      callback(err, null);
+      return;
+    }
+    callback(null, results);
+  });
+}
+
+
+module.exports = {
+  getNotesByUsername, login_user, register_user, getNoteById, addNote, wait, insertAdminNoteOnce, insertAdminUserOnce
+};
+```
+
+From the function `insertAdminNoteOnce` in database.js, we can see that the flag is stored in the database with the username `admin` and a random secret. The flag is stored in the `note` column, so to get the flag, we need to get the note with the username `admin` and `id` which is not known to us and the secret which is random.
+
+and to get any note there is two ways to get the note by the `note_id` and `note_secret` which can be done by the endpoint `/viewNote` or by the username and which can be done by the endpoint `/profile`.
+
+Also There is no Frontend for the challenge so we have to use curl or burp to interact with the challenge.
+
+### Solution:
+
+#### THE SECRET BEHIND 66
+this challenge really blew my mind, I spent a lot of time trying to find a way to get the flag, but I couldn't find a way to get the secret, so I decided to look at the `init.db` file and I found out that the `id` column is auto increment but starts from 66, so the admin note id is 66.
+
+![alt text](<../assets/img/blog/blackhat/notey/initdb.png>)
+
+so that restricted my idea to get the flag by the `note_id` and `note_secret` using the endpoint `/viewNote`, but I couldn't find a way to get the secret as it's random.
+
+### Short explanation of the exploit:
+- The `note_id` is known to be 66
+- The `note_secret` is random
+- we can inject an object in the `note_secret` field to get the flag
+
+`/viewNote?note_id=66&note_secret[note_id]=0`
+
+the `note_secret` is an object that contains the key `note_id` with the value 0 so the query will be like this `SELECT note_id,username,note FROM notes WHERE note_id = 66 and secret = 'note_id' = 0`
+
+Here's a breakdown of what happens:
+
+    note_id = 66: This condition is straightforward and will select rows where note_id is equal to 66.
+
+    secret = 'note_id' = 0: This part is more complex and involves a bit of SQL logic.
+
+        SQL evaluates expressions from left to right. So, the expression `secret = 'note_id' = 0` is interpreted as (secret = 'note_id') = 0.
+
+        The expression `secret = 'note_id'` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to 'note_id'.
+
+        The result of secret = 'note_id' (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to 0.
+
+        so, the condition (secret = 'note_id') = 0 is true when secret is not equal to 'note_id', which is the case here.
+
+        Therefore, the query will select rows where note_id is 66 and secret is not equal to 'note_id'. This will return the flag.
+
+        Here in this image is a similar example to understand the output:
+![alt text](<../assets/img/blog/blackhat/notey/online.png>)
+
+### Long explanation of the exploit:
 
