@@ -705,7 +705,7 @@ Here's a breakdown of what happens:
 
   Therefore, the query will select rows where note_id is 66 and `true`. This will return the flag.
 
-  Here in this image is a similar example to understand the output:
+Here in this image is a similar example to understand the output:
 ![alt text](<../assets/img/blog/blackhat/notey/online.png>)
 then it became:
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
