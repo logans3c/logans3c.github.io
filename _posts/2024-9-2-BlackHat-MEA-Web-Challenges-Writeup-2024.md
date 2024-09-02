@@ -310,6 +310,26 @@ WE GET THE ADMIN PASSWORD, LETS LOGIN AS ADMIN AND GET THE FLAG
 I created a note sharing website for everyone to talk to themselves secretly. Don't try to access others notes, grass isn't greener :'( )
 ```
 
+### Directory Structure
+```
+.
+├── src
+│   ├── node_modules
+│   ├── database.js
+│   ├── index.js
+│   ├── middlewares.js
+│   ├── package-lock.json
+│   ├── package.json
+│   └── re.txt
+├── build.sh
+├── docker-compose.yml
+├── docker-entrypoint.sh
+├── Dockerfile
+├── hook.sh
+├── init.db
+└── init.sh
+```
+
 ### Source Code
 index.js:
 ```js
