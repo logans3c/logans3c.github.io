@@ -1,5 +1,5 @@
 ---
-title:  "ICMTC 2024 FINALS WEB CHALLENGES WRITEUP"
+title:  "I"
 description: WEB WRITEUP FOR ICMTC CTF
 image: 
   path: /assets/img/blog/icmtc.jpg
