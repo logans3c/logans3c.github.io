@@ -289,16 +289,16 @@ To exploit this, we could:
 - The file would be saved safely due to secure_filename(), but the path in the database would contain the malicious path.
 - in a subsequent request to the endpoint `/file/<int:file_id>` which sends us the file based on the `file_path` in the database, it will return the content of the file `/etc/passwd` because the file path in the database is `/etc/passwd` and the file is saved in the server with the name `etc_passwd`
 
-![alt text](<Screenshot 2024-09-01 161051.png>)
+![alt text](<../assets/img/blog/blackhat/Screenshot 2024-09-01 161051.png>)
 
 Then get the file id :
-![alt text](<Screenshot 2024-09-01 161102.png>)
+![alt text](<../assets/img/blog/blackhat/Screenshot 2024-09-01 161102.png>)
 
 Then get the file content:
-![alt text](<Screenshot 2024-09-01 161109.png>)
+![alt text](<../assets/img/blog/blackhat/Screenshot 2024-09-01 161109.png>)
 
 WE GET THE ADMIN PASSWORD, LETS LOGIN AS ADMIN AND GET THE FLAG
-![alt text](<Screenshot 2024-09-01 161043.png>)
+![alt text](<../assets/img/blog/blackhat/Screenshot 2024-09-01 161043.png>)
 
 
 
