@@ -320,7 +320,7 @@ I created a note sharing website for everyone to talk to themselves secretly. Do
 │   ├── middlewares.js
 │   ├── package-lock.json
 │   ├── package.json
-│   └── re.txt
+│
 ├── build.sh
 ├── docker-compose.yml
 ├── docker-entrypoint.sh
