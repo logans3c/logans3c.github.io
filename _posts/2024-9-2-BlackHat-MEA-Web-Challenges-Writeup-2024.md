@@ -715,7 +715,7 @@ Here's a breakdown of what happens:
 
   SQL evaluates expressions from left to right. So, the expression `secret` = `` `note_id` `` = '0'is interpreted as (secret = `` `note_id` ``) = '0'.
 
-  The expression `secret = `` `note_id` `` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id` ``.
+  The expression `secret` = `` `note_id` `` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id` ``.
 
   The result of secret = `` `note_id` `` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
 
