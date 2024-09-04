@@ -1040,7 +1040,7 @@ In this challenge, I needed to find a gadget that would allow me to execute code
 
 The app uses EJS as the view engine so it's perfect to be my gadget to achieve RCE.
 
-This blog post is a great resource for understanding how to use EJS to achieve RCE: https://blog.huli.tw/2023/06/22/en/ejs-render-vulnerability-ctf/
+This blog post is a great resource for understanding how to use EJS to achieve RCE: [https://blog.huli.tw/2023/06/22/en/ejs-render-vulnerability-ctf/](https://blog.huli.tw/2023/06/22/en/ejs-render-vulnerability-ctf/)
 
 so first we need to pollute the prototype by modifying a property in it called `client` and give the value `1` to it.
 
