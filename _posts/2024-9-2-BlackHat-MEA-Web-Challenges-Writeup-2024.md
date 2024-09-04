@@ -724,19 +724,23 @@ Let's break down what happens in this query:
    
   - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the coresbonding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
    
-  - the previous comparison will be done in every row of the two columns `secret` and `note_id` in the database so assume we have a this database of note_id and secret:
+  The previous comparison will be done for every row in the database, comparing the `secret` and `note_id` columns. To illustrate this, let's assume we have a database with the following sample data:
 
-  |note_id                  | secret          |
-| :--------------------------- | :--------------- |
-| 66       | 0e5b9ec63e3da7980658792c9ad1d9bec8774f5095cc627ac812ab1e78c852ef     |
-| 67            | H3f66c6a995a79375a08590de3efee92e755ce01b3c42b37bd9f14a60ac700681   |
-| 68 | c3b78102be5c2c03d2f6a37a066e0a3dd541aa447632b28de9d8d67282fdbf46 |
+  | note_id | secret                           |
+  |---------|----------------------------------|
+  | 66      | a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6 |
+  | 67      | q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2 |
+  | 68      | g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8 |
 
-  - The expression `secret = ``note_id`` will return 0 for the first row and 0 for the second row and 0 for the third row.
+  For each row, the comparison `secret = ``note_id``` will be evaluated:
 
-  
-   
-  - Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0.
+  1. For note_id 66: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' = '66' (false, returns 0)
+  2. For note_id 67: 'q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2' = '67' (false, returns 0)
+  3. For note_id 68: 'g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8' = '68' (false, returns 0)
+
+  In all cases, this comparison returns 0 (false) because the secret is a 32-character string that doesn't match the note_id.
+
+  - Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0 for each row.
    
   - Therefore, the condition `(secret = ``note_id``) = '0'` is now effectively `0=0`.
 
@@ -747,6 +751,10 @@ To further illustrate this concept, here's an example using an online MySQL comp
 ![alt text](<../assets/img/blog/blackhat/notey/online.png>)
 
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
+
+This third image illustrates the same concept but this time there are two rows which will make the expression `dept = ``name``` returns 1 so the only row will be returned is the third one.
+
+![alt text](<../assets/img/blog/blackhat/notey/on3.png>)
 
 To confirm how our request is interpreted by the database, I also checked my `mysql` logs. Here's the exploitation request:
 
