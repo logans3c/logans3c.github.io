@@ -724,7 +724,15 @@ Let's break down what happens in this query:
    
   - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the coresbonding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
    
-  - the previous comparison will be done in every row of the two columns `secret` and `note_id` in the database.
+  - the previous comparison will be done in every row of the two columns `secret` and `note_id` in the database so assume we have a this database of note_id and secret:
+
+  |note_id                  | secret          |
+| :--------------------------- | :--------------- |
+| 66       | 0e5b9ec63e3da7980658792c9ad1d9bec8774f5095cc627ac812ab1e78c852ef     |
+| 67            | H3f66c6a995a79375a08590de3efee92e755ce01b3c42b37bd9f14a60ac700681   |
+| 68 | c3b78102be5c2c03d2f6a37a066e0a3dd541aa447632b28de9d8d67282fdbf46 |
+
+  - The expression `secret = ``note_id`` will return 0 for the first row and 0 for the second row and 0 for the third row.
 
   
    
