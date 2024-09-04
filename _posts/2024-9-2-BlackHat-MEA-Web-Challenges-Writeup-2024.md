@@ -718,11 +718,11 @@ Let's break down what happens in this query:
 
 - `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-- `secret = `` `note_id` `` = '0'`: This part is more complex and involves some SQL logic:
+- `secret = `` `note_id` `` = '0' `: This part is more complex and involves some SQL logic:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'` is interpreted as `(secret = `` `note_id` ``) = '0'`.
    
-  - The expression `secret = `` `note_id` `` ` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the corresponding row of the `note_id` column. In our case, it will return 0 as the `secret` is not equal to `note_id` in any row because the secret is 32 random length.
+  - The expression ```secret = `note_id` ```  will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the corresponding row of the `note_id` column. In our case, it will return 0 as the `secret` is not equal to `note_id` in any row because the secret is 32 random length.
    
   The previous comparison will be done for every row in the database, comparing the `secret` and `note_id` columns. To illustrate this, let's assume we have a database with the following sample data:
 
