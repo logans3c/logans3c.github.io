@@ -718,7 +718,7 @@ Let's break down what happens in this query:
 
 - `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-- `secret = `` `note_id` `` = '0' `: This part is more complex and involves some SQL logic:
+- ``` secret = `note_id` = '0' ```: This part is more complex and involves some SQL logic:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'` is interpreted as ``` (secret = `note_id`) = '0' ```.
    
@@ -732,7 +732,7 @@ Let's break down what happens in this query:
   | 67      | q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2 |
   | 68      | g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8 |
 
-  For each row, the comparison `secret = `` `note_id` `` ` will be evaluated:
+  For each row, the comparison ```secret = `note_id` ``` will be evaluated:
 
   1. For note_id 66: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' = '66' (false, returns 0)
   2. For note_id 67: 'q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2' = '67' (false, returns 0)
@@ -740,9 +740,9 @@ Let's break down what happens in this query:
 
   In all cases, this comparison returns 0 (false) because the secret is a 32-character string that doesn't match the note_id.
 
-  - Since '0' is a string and 1 or 0 (which maybe returned by the expression `secret =``note_id```) are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = `` `note_id` ``` is equal to the integer 0 for each row.
+  - Since '0' is a string and 1 or 0 (which maybe returned by the expression ```secret = `note_id` ```) are integers, the comparison will treat '0' as an integer. So, the expression ``` (secret = `note_id`) = '0' ``` will check if the result of ``` secret = `note_id` ``` is equal to the integer 0 for each row.
    
-  - Therefore, the condition `(secret = `` `note_id` ``) = '0'` is now effectively `0=0`.
+  - Therefore, the condition ``` (secret = `note_id`) = '0' ``` is now effectively `0=0`.
 
 As a result, the query will select rows where `note_id` is 66 and `0=0`. This condition will always be true, thus returning the flag.
 
