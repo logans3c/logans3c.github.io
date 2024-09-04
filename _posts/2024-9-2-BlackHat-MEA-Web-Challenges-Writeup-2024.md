@@ -684,58 +684,64 @@ module.exports = {
 
 From the function `insertAdminNoteOnce` in database.js, we can see that the flag is stored in the database with the username `admin` and a random secret. The flag is stored in the `note` column, so to get the flag, we need to get the note with the username `admin` and `id` which is not known to us and the secret which is random.
 
-and to get any note there is two ways to get the note by the `note_id` and `note_secret` which can be done by the endpoint `/viewNote` or by the username and which can be done by the endpoint `/profile`.
+To get any note, there are two ways: either by the `note_id` and `note_secret` which can be done through the endpoint `/viewNote`, or by the username in the session cookies which can be accessed via the endpoint `/profile`. However, it's important to note that there is no Frontend for the challenge, so we have to use curl or burp to interact with the challenge.
 
-Also There is no Frontend for the challenge so we have to use curl or burp to interact with the challenge.
 
 ### Solution:
 
 #### THE SECRET BEHIND 66
-this challenge really blew my mind, I spent a lot of time trying to find a way to get the flag, but I couldn't find a way to get the secret, so I decided to look at the `init.db` file and I found out that the `id` column is auto increment but starts from 66, so the admin note id is 66.
+
+This challenge was particularly mind-boggling, and I spent a considerable amount of time trying to find a way to get the flag. Initially, I couldn't find a way to get the secret, so I decided to investigate the `init.db` file. To my surprise, I discovered that the `id` column is auto-incremented but starts from 66, which means the admin note id is 66 as it's the first note in the database.
 
 ![alt text](<../assets/img/blog/blackhat/notey/initdb.png>)
 
-so that restricted my idea to get the flag by the `note_id` and `note_secret` using the endpoint `/viewNote`, but I couldn't find a way to get the secret as it's random.
+This discovery narrowed down my approach to getting the flag by the `note_id` and `note_secret` using the endpoint `/viewNote`. Nevertheless, I still couldn't find a way to get the secret as it's randomly generated.
 
 ### Short explanation of the exploit:
+
+The exploit relies on three key factors:
 - The `note_id` is known to be 66
 - The `note_secret` is random
-- we can inject an object in the `note_secret` field to get the flag
+- We can inject an object in the `note_secret` field to get the flag
 
-`/viewNote?note_id=66&note_secret[note_id]=0`
+The exploit can be executed using the following URL:
+`/viewNote?note_id=66¬e_secret[note_id]=0`
 
-
-The `note_secret` is an object that contains the key `note_id` with the value 0, so the query will be like this:
+In this exploit, the `note_secret` is an object that contains the key `note_id` with the value 0. Consequently, the SQL query will look like this:
 
 ```sql
 SELECT note_id, username, note FROM notes WHERE note_id = 66 AND secret = `note_id` = '0'
 ```
 
-Here's a breakdown of what happens:
 
-  note_id = 66: This condition is straightforward and will select rows where note_id is equal to 66.
+Let's break down what happens in this query:
 
-  secret = `` `note_id` `` = '0': This part is more complex and involves a bit of SQL logic.
+1. `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-  SQL evaluates expressions from left to right. So, the expression `secret` = `` `note_id` `` = '0'is interpreted as (secret = `` `note_id` ``) = '0'.
+2. `secret = ``note_id`` = '0'`: This part is more complex and involves some SQL logic:
 
-  The expression `secret` = `` `note_id` `` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the string 'note_id', in our case it will return 0 as the secret is not equal to `` `note_id` ``.
+  - SQL evaluates expressions from left to right. So, the expression `secret = ``note_id`` = '0'` is interpreted as `(secret = ``note_id``) = '0'`.
+   
+  - The expression `secret = ``note_id will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of a row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` becuase the secret is 32 random length.
+   
+  - The result of `secret = ``note_id`` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
+   
+  - Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0.
+   
+  - Therefore, the condition `(secret = ``note_id``) = '0'` is now effectively `0=0`.
 
-  The result of ``secret` = `` `note_id` `` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
+As a result, the query will select rows where `note_id` is 66 and `0=0`. This condition will always be true, thus returning the flag.
 
-  Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression (secret = `` `note_id` ``) = '0' will check if the result of secret = `` `note_id` `` is equal to the integer 0.
+To further illustrate this concept, here's an example using an online MySQL compiler:
 
-  so, the condition (secret = `` `note_id` ``) = '0' is now `0=0`
-
-  Therefore, the query will select rows where note_id is 66 and `0=0`. This will return the flag.
-
-Here in this image is a similar example to understand the output:
 ![alt text](<../assets/img/blog/blackhat/notey/online.png>)
-then it became:
+
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
 
-Also here is the request from mysql logs to be sure of how our request interpreted by the database
+To confirm how our request is interpreted by the database, I also checked my `mysql` logs. Here's the exploitation request:
+
 ![alt text](<../assets/img/blog/blackhat/notey/local.png>)
+
 
 ### Getting the flag
 we need to be fast when getting the flag as the server was restarting every few seconds, so we need to write a script to get the flag as soon as the server starts.
