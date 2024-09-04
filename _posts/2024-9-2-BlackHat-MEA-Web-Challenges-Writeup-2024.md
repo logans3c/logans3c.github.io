@@ -3,8 +3,8 @@ title:  "BLACK HAT MEA CTF QUALS 2024 WEB CHALLENGES WRITEUP"
 description: WEB WRITEUP FOR BLACK HAT QUALS 2024
 image: 
   path: /assets/img/blog/blackhat/wolv_black_hat.jpg
-tags: [ctf,sql_injection,web,Object_Injection]
-date:   2024-07-28 13:49:56 +0300
+tags: [ctf,sql_injection,web,Object_Injection,file_upload,LFD,Prototype_Pollution]
+date:   2024-09-4 13:49:56 +0300
 categories: [CTFs]
 ---
 Hi I am Mohammed Ashraf AKA logan0x
