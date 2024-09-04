@@ -718,7 +718,7 @@ Let's break down what happens in this query:
 
 - `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-- `secret = &#96;backticks&#96; = '0'`: This part is more complex and involves some SQL logic:
+- `secret = ``` ``backticks`` ``` = '0'`: This part is more complex and involves some SQL logic:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'` is interpreted as `(secret = `` `note_id` ``) = '0'`.
    
