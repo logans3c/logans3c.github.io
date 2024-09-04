@@ -716,13 +716,13 @@ SELECT note_id, username, note FROM notes WHERE note_id = 66 AND secret = `note_
 
 Let's break down what happens in this query:
 
-1. `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
+- `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-2. `secret = ``note_id`` = '0'`: This part is more complex and involves some SQL logic:
+- `secret = ``note_id`` = '0'`: This part is more complex and involves some SQL logic:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = ``note_id`` = '0'` is interpreted as `(secret = ``note_id``) = '0'`.
    
-  - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the coresbonding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
+  - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the corresponding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
    
   The previous comparison will be done for every row in the database, comparing the `secret` and `note_id` columns. To illustrate this, let's assume we have a database with the following sample data:
 
@@ -740,7 +740,7 @@ Let's break down what happens in this query:
 
   In all cases, this comparison returns 0 (false) because the secret is a 32-character string that doesn't match the note_id.
 
-  - Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0 for each row.
+  - Since '0' is a string and 1 or 0 (which returned by the expression `secret =``note_id```) are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0 for each row.
    
   - Therefore, the condition `(secret = ``note_id``) = '0'` is now effectively `0=0`.
 
