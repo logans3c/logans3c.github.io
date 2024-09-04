@@ -740,7 +740,7 @@ Let's break down what happens in this query:
 
   In all cases, this comparison returns 0 (false) because the secret is a 32-character string that doesn't match the note_id.
 
-  - Since '0' is a string and 1 or 0 (which returned by the expression `secret =``note_id```) are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0 for each row.
+  - Since '0' is a string and 1 or 0 (which maybe returned by the expression `secret =``note_id```) are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0 for each row.
    
   - Therefore, the condition `(secret = ``note_id``) = '0'` is now effectively `0=0`.
 
