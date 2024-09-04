@@ -709,9 +709,11 @@ The exploit can be executed using the following URL:
 
 In this exploit, the `note_secret` is an object that contains the key `note_id` with the value 0. Consequently, the SQL query will look like this:
 
-```sql
+
+
 SELECT note_id, username, note FROM notes WHERE note_id = 66 AND secret = `note_id` = '0'
-```
+
+
 
 
 Let's break down what happens in this query:
@@ -732,7 +734,7 @@ Let's break down what happens in this query:
   | 67      | q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2 |
   | 68      | g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8 |
 
-  For each row, the comparison `secret = ``note_id``` will be evaluated:
+  For each row, the comparison `secret = ``note_id will be evaluated:
 
   1. For note_id 66: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' = '66' (false, returns 0)
   2. For note_id 67: 'q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2' = '67' (false, returns 0)
@@ -752,7 +754,7 @@ To further illustrate this concept, here's an example using an online MySQL comp
 
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
 
-This third image illustrates the same concept but this time there are two rows which will make the expression `dept = ``name``` returns 1 so the only row will be returned is the third one.
+This third image illustrates the same concept but this time there are two rows which will make the expression `dept = ``name returns 1 so the only row will be returned is the third one.
 
 ![alt text](<../assets/img/blog/blackhat/notey/on3.png>)
 
