@@ -754,7 +754,8 @@ To further illustrate this concept, here's an example using an online MySQL comp
 
 ![alt text](<../assets/img/blog/blackhat/notey/on2.png>)
 
-This third image illustrates the same concept but this time there are two rows which will make the expression `dept = ``name returns 1 so the only row will be returned is the third one.
+
+This third image illustrates the same concept but this time there are two rows which will make the expression `dept = `` `name` `` returns 1 so the only row will be returned is the third one.
 
 ![alt text](<../assets/img/blog/blackhat/notey/on3.png>)
 
