@@ -718,11 +718,11 @@ Let's break down what happens in this query:
 
 - `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-- `secret = ``note_id`` = '0'`: This part is more complex and involves some SQL logic:
+- `secret = `` `note_id` `` = '0'`: This part is more complex and involves some SQL logic:
 
-  - SQL evaluates expressions from left to right. So, the expression `secret = ``note_id`` = '0'` is interpreted as `(secret = ``note_id``) = '0'`.
+  - SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'` is interpreted as `(secret = `` `note_id` ``) = '0'`.
    
-  - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the corresponding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
+  - The expression `secret = `` `note_id` `` ` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the corresponding row of the `note_id` column. In our case, it will return 0 as the `secret` is not equal to `note_id` in any row because the secret is 32 random length.
    
   The previous comparison will be done for every row in the database, comparing the `secret` and `note_id` columns. To illustrate this, let's assume we have a database with the following sample data:
 
@@ -732,7 +732,7 @@ Let's break down what happens in this query:
   | 67      | q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2 |
   | 68      | g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8 |
 
-  For each row, the comparison `secret = ``note_id will be evaluated:
+  For each row, the comparison `secret = `` `note_id` `` ` will be evaluated:
 
   1. For note_id 66: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' = '66' (false, returns 0)
   2. For note_id 67: 'q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2' = '67' (false, returns 0)
