@@ -707,7 +707,7 @@ The exploit relies on three key factors:
 The exploit can be executed using the following URL:
 `/viewNote?note_id=66&secret[note_id]=0`
 
-In this exploit, the `note_secret` is an object that contains the key `note_id` with the value 0. Consequently, the SQL query will look like this:
+In this exploit, the `secret` is an object that contains the key `note_id` with the value 0. Consequently, the SQL query will look like this:
 
 ```sql
 SELECT note_id, username, note FROM notes WHERE note_id = 66 AND secret = `note_id` = '0'
@@ -718,7 +718,7 @@ Let's break down what happens in this query:
 
 - `note_id = 66`: This condition is straightforward and will select rows where note_id is equal to 66.
 
-- `secret = `` `note_id` `` = '0'`: This part is more complex and involves some SQL logic:
+- `secret = &#96;backticks&#96; = '0'`: This part is more complex and involves some SQL logic:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = `` `note_id` `` = '0'` is interpreted as `(secret = `` `note_id` ``) = '0'`.
    
