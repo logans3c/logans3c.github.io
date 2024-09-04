@@ -722,9 +722,11 @@ Let's break down what happens in this query:
 
   - SQL evaluates expressions from left to right. So, the expression `secret = ``note_id`` = '0'` is interpreted as `(secret = ``note_id``) = '0'`.
    
-  - The expression `secret = ``note_id will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of a row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` becuase the secret is 32 random length.
+  - The expression `secret = ``note_id`` will return a boolean value (1 for true, 0 for false) depending on whether the value of secret is equal to the value of the coresbonding row of the `note_id` column. In our case, it will return 0 as the secret is not equal to ``note_id`` in any row because the secret is 32 random length.
    
-  - The result of `secret = ``note_id`` (which is either 1 or 0 but in our case it will return 0 as the note id is 66 and the secret is 32 random length) is then compared to '0'.
+  - the previous comparison will be done in every row of the two columns `secret` and `note_id` in the database.
+
+  
    
   - Since '0' is a string and 1 or 0 are integers, the comparison will treat '0' as an integer. So, the expression `(secret = ``note_id``) = '0'` will check if the result of `secret = ``note_id``` is equal to the integer 0.
    
