@@ -78,8 +78,9 @@ The app takes three parameters and do that :
 define('yek', $_SESSION['yek']);
 
 // Later in code:
-custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash'])
+custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash']
 ```
+
 **Pitfall**: `$yek` (variable) vs `yek` (constant)
 
 - **Expected**: `$yek` should reference the constant `yek`
@@ -87,16 +88,20 @@ custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash'])
 - **Impact**: Encryption key becomes empty string instead of 16-byte session key (as the second parameter to `custom_sign() is the encryption key.)
 
 ####  Undefined Constant String Conversion
-```
+
+```php
+
 <?php
 return openssl_encrypt($data, 'aes-256-cbc', KEY, 0, iv);
 ```
+
 **Pitfall**: `iv` constant is never defined
 
 - **Expected**: `iv` should be a defined constant
 - **Reality**: PHP converts undefined constant to string `"iv"`. so the `iv` will become literally "iv"
 - **Impact**: IV becomes predictable 2-byte string instead of random 16 bytes
 ####  OpenSSL IV Padding Behavior (it's not a pitfall)
+
 ```
 <?php
 openssl_encrypt($data, 'aes-256-cbc', KEY, 0, "iv");
@@ -108,6 +113,7 @@ openssl_encrypt($data, 'aes-256-cbc', KEY, 0, "iv");
 - **Result**: `"iv\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"` (predictable)
 #### 4. Array Parameter Handling
 ```php
+
 <?php
   
 
