@@ -2,7 +2,7 @@
 title:  "Certay revenge Web Challenge - From L3ak CTF"
 description: Web challenge from L3ak CTF, a simple note-taking system with user authentication, where the goal is to bypass the required hash using PHP language pitfalls.
 image: 
-  path: /assets/img/blog/attachments-certay
+  path: /assets/img/blog/attachments-certay/98412db5-a8b3-467e-aaaf-f3f6f8cbfd40.png
 tags: [ctf, web, PHP, AES, pitfalls]
 date:   2025-07-15 13:49:56 +0300
 categories: [CTFs]
