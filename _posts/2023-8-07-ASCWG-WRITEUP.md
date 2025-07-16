@@ -6,7 +6,7 @@ image:
   path: /assets/img/blog/ASCWG.jpeg
 tags: CTF
 date:   2023-08-06 13:49:56 +0300
-category: CTF
+category: CTFs
 ---
 HI I am Mohammed Ashraf AKA logan0x
 

@@ -4,7 +4,7 @@ title:  "Detailed Writeup about deserialization"
 description: Developing a custom gadget chain for PHP deserialization ,Portswigger lab
 image: 
   path: /assets/img/blog/dese.jpg
-tags: PHP
+tags: [PHP]
 date:   2023-07-20 13:49:56 +0300
 category: PHP
 ---
