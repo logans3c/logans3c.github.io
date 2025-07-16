@@ -52,7 +52,7 @@ function custom_sign($data, $key, $vi) {
 }
 ```
 #### Signature Verification Logic
-```
+```php
 <?php
 if (custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash']) {
     // Authentication successful - execute user notes
@@ -90,7 +90,6 @@ custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash']
 ####  Undefined Constant String Conversion
 
 ```php
-
 <?php
 return openssl_encrypt($data, 'aes-256-cbc', KEY, 0, iv);
 ```
@@ -113,7 +112,6 @@ openssl_encrypt($data, 'aes-256-cbc', KEY, 0, "iv");
 - **Result**: `"iv\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"` (predictable)
 #### 4. Array Parameter Handling
 ```php
-
 <?php
   
 
