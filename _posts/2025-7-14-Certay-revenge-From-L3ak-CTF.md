@@ -122,7 +122,7 @@ if (isset($_GET['msg']) && isset($_GET['hash']) && isset($_GET['key'])) {
 **Pitfall**: `openssl_encrypt()` expects string, receives array
 
 - **Input**: `key[]` creates `$_GET['key'] = []` (empty array)
-- **OpenSSL behavior**: Returns 
+- **OpenSSL behavior**: Returns :
 
 ```
 Warning: openssl_encrypt() expects parameter 1 to be string, array given in /home/user/scripts/code.php on line 7
@@ -131,7 +131,9 @@ NULL
 ![alt text](<../assets/img/blog/attachments-certay/Pasted image 20250716132852.png>)
 
 - **Impact**: 
+
 ```
+
 // URL: dashboard.php?key[]
 
 // Creates: $_GET['key'] = []
@@ -140,20 +142,20 @@ NULL
 
 // Then: custom_sign($_GET['msg'], $yek, NULL)
 // yek is also empty, we showed that previously
+
 ```
+
 *The Real Signature Check is* :
-```
-<?php
+```php
 custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash']
 ```
 but with such behaviors it becomes:
-```
-<?php
+```php
+
 custom_sign($_GET['msg'], null, NULL) === $_GET['hash']
 ``` 
 which is :
-```
-<?php
+```php
 openssl_encrypt($_GET['msg'], 'aes-256-cbc', '', 0, NULL) === $_GET['hash']
 ```
 **How NULL is Handled as IV**
