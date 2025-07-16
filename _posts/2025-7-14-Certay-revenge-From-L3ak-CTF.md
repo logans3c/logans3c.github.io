@@ -111,9 +111,8 @@ openssl_encrypt($data, 'aes-256-cbc', KEY, 0, "iv");
 - **OpenSSL behavior**: Pads with null bytes to 16 bytes
 - **Result**: `"iv\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"` (predictable)
 #### 4. Array Parameter Handling
+
 ```php
-<?php
-  
 
 if (isset($_GET['msg']) && isset($_GET['hash']) && isset($_GET['key'])) {
 
