@@ -160,6 +160,7 @@ When `NULL` which is `$yek` is passed as the IV parameter:
 - **OpenSSL pads empty string to 16 bytes with null bytes**
 - **Effective IV becomes 16 null bytes**
 *To make sure of this behavior i created this test:*
+
 ```php
 
 // Test the actual behavior
@@ -188,7 +189,8 @@ false IV: 2HB5iFgiP0Vk00CxA/ZSew==
 empty string IV: 2HB5iFgiP0Vk00CxA/ZSew==
 ```
 
-**So now all i need making these nested conditions returns true :
+**So now all i need making these nested conditions returns true :**
+
 ```php
 if (isset($_GET['msg']) && isset($_GET['hash']) && isset($_GET['key'])) {
 
