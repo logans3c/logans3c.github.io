@@ -8,8 +8,6 @@ date:   2025-07-15 13:49:56 +0300
 categories: [CTFs]
 ---
 **Last Modified: 2025-07-14 06:51**
-> [!quote] "Your chances of success in any undertaking can always be measured by your belief in yourself." - [[Robert Collier]]
-
 
 > Probably you need to understand our language to get some of the super powers?
 
@@ -23,7 +21,7 @@ The web application is a simple note-taking system with user authentication:
 4. **Dashboard Access**: dashboard.php displays notes after signature verification
 
 ### Normal Authentication Flow
-```
+```php
 <?php
 // Login creates session
 $_SESSION['user_id'] = $user_id;
@@ -72,10 +70,10 @@ The app takes three parameters and do that :
 ![alt text](<../assets/img/blog/attachments-certay/Pasted image 20250716130912.png>)
 
 
-## What i learned
+## Exploit Chain
 ### PHP Language Pitfalls Exploited
 #### Undefined Constant Behavior
-```
+```php
 <?php
 define('yek', $_SESSION['yek']);
 
@@ -109,7 +107,7 @@ openssl_encrypt($data, 'aes-256-cbc', KEY, 0, "iv");
 - **OpenSSL behavior**: Pads with null bytes to 16 bytes
 - **Result**: `"iv\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"` (predictable)
 #### 4. Array Parameter Handling
-```
+```php
 <?php
   
 
@@ -117,10 +115,12 @@ if (isset($_GET['msg']) && isset($_GET['hash']) && isset($_GET['key'])) {
 
     if (custom_sign($_GET['msg'], $yek, safe_sign($_GET['key'])) === $_GET['hash']) {
 ```
+
 **Pitfall**: `openssl_encrypt()` expects string, receives array
 
 - **Input**: `key[]` creates `$_GET['key'] = []` (empty array)
 - **OpenSSL behavior**: Returns 
+
 ```
 Warning: openssl_encrypt() expects parameter 1 to be string, array given in /home/user/scripts/code.php on line 7
 NULL
