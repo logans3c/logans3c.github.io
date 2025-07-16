@@ -4,7 +4,7 @@ title:  "Arab Security Conference War Games Qualifications 2023"
 description: ASCWG WEB WRITEUP
 image: 
   path: /assets/img/blog/ASCWG.jpeg
-tags: CTF
+tags: [ctf]
 date:   2023-08-06 13:49:56 +0300
 category: CTFs
 ---
