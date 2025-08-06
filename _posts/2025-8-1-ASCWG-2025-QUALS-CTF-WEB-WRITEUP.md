@@ -10,7 +10,8 @@ categories: [CTFs]
 
 # Arab Security Conference Quals CTF Writeup - Team 4ay 5amseena
 
-I was competing in the Arab Security Conference CTF qualifiers with my team `4ay 5amseena` and managed to snag 4th place out of 434 teams - not too shabby!
+I was competing in the Arab Security Conference CTF qualifiers with my team `4ay 5amseena` and managed to snag 4th place out of 434 teams
+
 
 Me (logan0x) and [@aelmo](https://blog.elmosalamy.com) (best teammate ever.) solved 5 out of 7 challenges, so here's my writeup for the ones we solved.
 
@@ -1078,7 +1079,8 @@ basically This is the main extension detection function that:
 - Handles cache lookups for already-loaded Phar files
 - Extracts the extension part and calls validation
 - Returns SUCCESS/FAILURE based on whether a valid Phar extension is found
-and here is the call flow i got from this function 
+
+**and here is the call flow i got from this function**
 ```
 phar_detect_phar_fname_ext() 
 	↓ (finds extension) 
