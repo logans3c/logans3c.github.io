@@ -1050,11 +1050,11 @@ Error reading file: Cannot create phar '/var/www/html/uploads/x', file extension
 ```
 ![alt text](<../assets/img/blog/attachments_ASCWG/Pasted image 20250804124818.png>)
 
-So I searched for that error message in https://github.com/php/php-src/blob/master/ext/phar/phar.c
+So I searched for that error message in [phar.c](https://github.com/php/php-src/blob/master/ext/phar/phar.c)
 
-and i found it at :
-https://github.com/php/php-src/blob/master/ext/phar/phar.c#L1342
-```php
+and i found it at [phar.c#L1342](https://github.com/php/php-src/blob/master/ext/phar/phar.c#L1342)
+
+```C
 	if (FAILURE == phar_detect_phar_fname_ext(fname, fname_len, &ext_str, &ext_len, !is_data, 1, 1)) {
 		if (error) {
 			if (ext_len == -2) {
@@ -1070,7 +1070,7 @@ https://github.com/php/php-src/blob/master/ext/phar/phar.c#L1342
 
 So I went to analyze `phar_detect_phar_fname_ext()`
 and here's what I found :
-https://github.com/php/php-src/blob/master/ext/phar/phar.c#L1977
+[phar.c#L1977](https://github.com/php/php-src/blob/master/ext/phar/phar.c#L1977)
 
 basically This is the main extension detection function that:
 
@@ -1096,7 +1096,7 @@ so that's why our uploading to a file name with no dots or extensions at all did
 let's go in more details about how the function works.
 let's take the working bypass (double extension) as an example :
 
-###### **Step 1: Entry Point - `phar_detect_phar_fname_ext`**
+##### **Step 1: Entry Point - `phar_detect_phar_fname_ext`**
 For filename `x.phar.txt` (length = 10):
 ```C
 ### Step 1: Entry Point - `phar_detect_phar_fname_ext`
@@ -1111,7 +1111,7 @@ For filename `x.phar.txt` (length = 10):
 
 **Cache lookup section:** The function first checks if the file is already in cache (`phar_fname_map` or `cached_phars`). For a new file `x.phar.txt`, this would likely return nothing, so we proceed to the extension detection logic.
 
-###### **Step 2: Extension Detection Logic**
+##### **Step 2: Extension Detection Logic**
 ```C
 pos = memchr(filename + 1, '.', filename_len);
 ```
@@ -1150,8 +1150,10 @@ slash = memchr(pos, '/', filename_len - (pos - filename));
 - Searches for '/' from the '.' position onward
 - `slash = NULL` (no '/' found in `.phar.txt`)
 
-###### Step 3: No Directory Separator Path
-```c
+##### Step 3: No Directory Separator Path
+
+```C
+
 if (!slash) {
     /* this is a url like "phar://blah.phar" with no directory */
     *ext_str = pos;
@@ -1160,6 +1162,7 @@ if (!slash) {
     /* file extension must contain "phar" */
     return phar_check_str(filename, *ext_str, *ext_len, executable, for_create);
 }
+
 ```
 
 **For `x.phar.txt`:**
@@ -1168,7 +1171,8 @@ if (!slash) {
 - `*ext_str = pos` → points to `.phar.txt`
 - `*ext_len = strlen(pos)` → 9 (length of `.phar.txt`)
 - Calls `phar_check_str(filename, ".phar.txt", 9, executable, for_create)` *so if the filename was x.txt.txt it will not work ! and will return the same previous error message*
-###### Step 4: `phar_check_str` Analysis
+
+##### Step 4: `phar_check_str` Analysis
 
 Now we call `phar_check_str` with:
 
@@ -1192,7 +1196,8 @@ pos = strstr(ext_str, ".phar");
 - `pos` points to `.phar`
 
 Coming checks are so important: 
-```C
+```c
+
 if (!pos
     || (pos != ext_str && (*(pos - 1) == '/'))
     || (ext_len - (pos - ext_str)) < 5
@@ -1200,6 +1205,7 @@ if (!pos
     || !(*pos == '\0' || *pos == '/' || *pos == '.')) {
     return FAILURE;
 }
+
 ```
 
 **Condition analysis:**
