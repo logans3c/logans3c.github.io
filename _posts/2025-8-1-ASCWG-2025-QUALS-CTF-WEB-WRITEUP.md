@@ -1098,7 +1098,7 @@ let's take the working bypass (double extension) as an example :
 
 ##### **Step 1: Entry Point - `phar_detect_phar_fname_ext`**
 For filename `x.phar.txt` (length = 10):
-```C
+```c
 ### Step 1: Entry Point - `phar_detect_phar_fname_ext`
 
 For filename `x.phar.txt` (length = 10):
@@ -1121,7 +1121,7 @@ pos = memchr(filename + 1, '.', filename_len);
 - Finds first '.' at position 1 (the '.' in `.phar`)
 - `pos` points to the first '.' in `.phar.txt`
 
-```C
+```c
 next_extension:
 if (!pos) {
     return FAILURE;
@@ -1152,7 +1152,7 @@ slash = memchr(pos, '/', filename_len - (pos - filename));
 
 ##### Step 3: No Directory Separator Path
 
-```C
+```c
 
 if (!slash) {
     /* this is a url like "phar://blah.phar" with no directory */
@@ -1182,7 +1182,7 @@ Now we call `phar_check_str` with:
 - `executable = ?` (depends on calling context)
 - `for_create = ?` (depends on calling context)
 **Length check:**
-```C
+```c
 if (ext_len >= 50) { return FAILURE; }
 ```
 
