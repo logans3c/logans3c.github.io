@@ -1,5 +1,5 @@
 ---
-title:  "Arab Security Conference War Games 2025 Quals CTF Writeup"
+title:  "Arab Security Conference War Games (ASCWG) 2025 Quals CTF Writeup"
 description: Web challenge from ASCWG CTF.
 image: 
   path: /assets/img/blog/attachments-certay/98412db5-a8b3-467e-aaaf-f3f6f8cbfd40.png
@@ -8,11 +8,11 @@ date:   2025-07-15 13:49:56 +0300
 categories: [CTFs]
 ---
 
-# Arab Security Conference Quals CTF Writeup - Team `4ay 5amseena`
+# Arab Security Conference Quals CTF Writeup - Team 4ay 5amseena
 
 I was competing in the Arab Security Conference CTF qualifiers with my team `4ay 5amseena` and managed to snag 4th place out of 434 teams - not too shabby!
 
-Me (logan0x) and @aelmo (best teammate ever.) crushed 5 out of 7 challenges, so here's my writeup for the ones we solved.
+Me (logan0x) and [@aelmo](https://blog.elmosalamy.com) (best teammate ever.) solved 5 out of 7 challenges, so here's my writeup for the ones we solved.
 
 Quick heads up: this writeup might be a bit rough around the edges with missing images and stuff because the organizers shut down the challenges pretty quickly after the competition ended. I hate writing writeups while the CTF is still running, so this is more of a brain dump of my thought process and solving steps. I'll share any exploits I whipped up during the competition too.
 
@@ -20,7 +20,7 @@ Quick heads up: this writeup might be a bit rough around the edges with missing 
 
 ## Redirect Havoc
 
-> **WE GOT FIRST BLOOD ON THIS ONE HAHA**
+> **WE GOT FIRST BLOOD ON THIS ONE **
 
 ![alt text](<../assets/img/blog/attachments_ASCWG/Screenshot 2025-08-01 212352 1.png>)
 
@@ -51,10 +51,10 @@ Here's how my debugging journey unfolded:
 
 The `jku` (JWK Set URL) header tells the JWT verifier where to fetch the public keys needed for signature verification. The app uses the public key to verify the JWT signature, while I need the corresponding private key to sign my crafted JWT.
 
-**The key generation dance**: I had to set up my webhook to serve a proper JWK Set containing the public key, while using the corresponding private key to sign my JWT. 
+**The key generation step**: I had to set up my webhook to serve a proper JWK Set containing the public key, while using the corresponding private key to sign my JWT. 
 
 **Final hurdle**:
-![[Screenshot 2025-08-01 214530.png]]
+![alt text](<../assets/img/blog/attachments_ASCWG/Screenshot 2025-08-01 214530.png>)
 I got the JWT working and got a pseudo login hahaha , but I wasn't admin yet! Turns out I was using a `username` claim with the value "admin", but the app actually expected a `user` claim with the value "admin". Complete guess work, but hey, it worked! Finally grabbed that flag and secured first blood.
 
 ### The Claude Surprise
@@ -1012,8 +1012,8 @@ The `new Phar($fullPath)` call is a filesystem operation that reads our uploaded
 
 ### The Attack
 1. **Craft malicious Phar**:
+
 ```php
-<?php
 class SystemTask {
     private $task;
     public function __construct($task) {
