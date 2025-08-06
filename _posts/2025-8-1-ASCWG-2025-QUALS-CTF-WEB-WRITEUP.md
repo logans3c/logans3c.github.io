@@ -2,7 +2,7 @@
 title:  "Arab Security Conference War Games (ASCWG) 2025 Quals CTF Writeup"
 description: Web challenge from ASCWG CTF.
 image: 
-  path: /assets/img/blog/attachments-certay/98412db5-a8b3-467e-aaaf-f3f6f8cbfd40.png
+  path: /assets/img/blog/attachments_ASCWG/ascwg_2025.jpg
 tags: [ctf, web, sql_injection, Race_Condition, Insecure_Deserialization, JWT, RCE, PHP, Phar]
 date:   2025-07-15 13:49:56 +0300
 categories: [CTFs]
